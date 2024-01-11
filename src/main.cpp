@@ -64,9 +64,13 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    unsigned int texture0;
+    glActiveTexture(GL_TEXTURE0);
+    glGenTextures(1, &texture0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
     int width, height, nrChannels;
     unsigned char * data = stbi_load("./image/container.jpg", &width, &height, &nrChannels, 0);
     if(data){
@@ -76,14 +80,26 @@ int main()
     else{
         cout << "Failed to load texture" << endl;
     }
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    unsigned int texture1;
+    glActiveTexture(GL_TEXTURE1);
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    stbi_set_flip_vertically_on_load(true);
+    data = stbi_load("./image/awesomeface.png", &width, &height, &nrChannels, 0);
+    if(data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else{
+        cout << "Failed to load texture" << endl;
+    }
+    glUniform1i(glGetUniformLocation(shaderProgram.ID, "texture0"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgram.ID, "texture1"), 1);
     
     stbi_image_free(data);
 
     // render loop
-    // -----------
+    // -----------0
     while (!glfwWindowShouldClose(window))
     {
         // input
