@@ -9,7 +9,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 int setWindow();
 unsigned int setShader(string vertexShaderSource, GLenum shaderType);
-void setProgram(unsigned int vertexShader, unsigned int fragShader);
+unsigned int setProgram(unsigned int vertexShader, unsigned int fragShader);
 string readFile(string filePath);
 
 // settings
@@ -37,7 +37,7 @@ int main()
 
     unsigned int vertexShader = setShader("./shader/simple.vs", GL_VERTEX_SHADER);
     unsigned int fragmentShader = setShader("./shader/simple.fs", GL_FRAGMENT_SHADER);
-    setProgram(vertexShader, fragmentShader);
+    unsigned int program = setProgram(vertexShader, fragmentShader);
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -51,7 +51,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
     glEnableVertexAttribArray(0);
 
-    unsigned EBO;
+    unsigned int EBO;
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -68,6 +68,12 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        float timeValue = glfwGetTime();
+        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(program, "ourColor");
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)(sizeof(float) * 0));
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -124,10 +130,8 @@ string readFile(string filePath){
     while(getline(infile, temp)){
 			str += temp;
             str += "\n";
-		}
-    // 문자열을 출력합니다.
-    std::cout << str.c_str() << std::endl;
-        return str;
+    }
+    return str;
 }
 
 unsigned int setShader(string shaderSource, GLenum shaderType){
@@ -148,7 +152,7 @@ unsigned int setShader(string shaderSource, GLenum shaderType){
     return shader;
 }
 
-void setProgram(unsigned int vertexShader, unsigned int fragShader){
+unsigned int setProgram(unsigned int vertexShader, unsigned int fragShader){
     unsigned int program;
     program = glCreateProgram();
     glAttachShader(program, vertexShader);
@@ -157,6 +161,7 @@ void setProgram(unsigned int vertexShader, unsigned int fragShader){
     glUseProgram(program);
     glDeleteShader(vertexShader);
     glDeleteShader(fragShader);
+    return program;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
