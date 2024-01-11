@@ -25,14 +25,13 @@ int main()
     }
 
     float vertices[] = {
-        0.5f,  0.5f, 0.0f,  // 우측 상단
-        0.5f, -0.5f, 0.0f,  // 우측 하단
-        -0.5f, -0.5f, 0.0f,  // 좌측 하단
-        -0.5f,  0.5f, 0.0f   // 좌측 상단
-    };
+        // 위치              // 컬러
+        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 우측 하단
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 좌측 하단
+        0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 위 
+    };    
     unsigned int indices[] = {  // 0부터 시작한다는 것을 명심하세요!
-        0, 1, 3,   // 첫 번째 삼각형
-        1, 2, 3    // 두 번째 삼각형
+        0, 1, 2
     };
 
     unsigned int vertexShader = setShader("./shader/simple.vs", GL_VERTEX_SHADER);
@@ -48,8 +47,11 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *)(sizeof(float) * 3));
+    glEnableVertexAttribArray(1);
 
     unsigned int EBO;
     glGenBuffers(1, &EBO);
@@ -69,12 +71,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue = glfwGetTime();
-        float greenValue = sin(timeValue) / 2.0f + 0.5f;
-        int vertexColorLocation = glGetUniformLocation(program, "ourColor");
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)(sizeof(float) * 0));
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void *)(sizeof(float) * 0));
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
