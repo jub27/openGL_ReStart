@@ -3,6 +3,9 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "shader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -56,16 +59,13 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *)(sizeof(float) * 3));
-    glEnableVertexAttribArray(1);
-
     unsigned int EBO;
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     unsigned int texture0;
     glActiveTexture(GL_TEXTURE0);
@@ -98,6 +98,11 @@ int main()
     
     stbi_image_free(data);
 
+
+    
+    
+    
+
     // render loop
     // -----------0
     while (!glfwWindowShouldClose(window))
@@ -110,7 +115,12 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, 0.0f, 0.0f));
+        trans = glm::scale(trans, glm::vec3(0.5f, 1.0f, 1.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0, 0, 1.0f));
+        
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "transform"),1, GL_FALSE, glm::value_ptr(trans));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)(sizeof(float) * 0));
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
