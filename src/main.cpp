@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include "shader.h"
+
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -34,9 +36,8 @@ int main()
         0, 1, 2
     };
 
-    unsigned int vertexShader = setShader("./shader/simple.vs", GL_VERTEX_SHADER);
-    unsigned int fragmentShader = setShader("./shader/simple.fs", GL_FRAGMENT_SHADER);
-    unsigned int program = setProgram(vertexShader, fragmentShader);
+    Shader shaderProgram = Shader("./shader/simple.vs", "./shader/simple.fs");
+    shaderProgram.use();
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -173,7 +174,6 @@ void processInput(GLFWwindow *window)
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    std::cout << 123 << std::endl;
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
