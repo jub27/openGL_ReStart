@@ -89,5 +89,6 @@
         "stack": "cpp",
         "unordered_set": "cpp",
         "*.rh": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
