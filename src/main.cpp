@@ -160,11 +160,14 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glm::mat4 view(1.0f);
-        view = glm::translate(view, glm::vec3(0, 0, -3.0f));
+        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 13.0f);
+        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, up);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        
         glm::mat4 projection(1.0f);
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
         for(int i = 0; i < 10; i++){
