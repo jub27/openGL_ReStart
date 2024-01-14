@@ -193,7 +193,8 @@ int main()
         objectProgram.setVec3("light.specular", lightColor);
         objectProgram.setVec3("light.position", lightPos); 
         objectProgram.setVec3("light.direction", camera.Front);
-        objectProgram.setFloat("light.cutOff", glm::cos(glm::radians(16.5f))); 
+        objectProgram.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+        objectProgram.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f))); 
         objectProgram.setFloat("light.constant", 1.0f); 
         objectProgram.setFloat("light.linear", 0.09f); 
         objectProgram.setFloat("light.quadratic", 0.032f); 
