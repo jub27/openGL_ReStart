@@ -135,22 +135,12 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        objectProgram.use();
-        objectProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        objectProgram.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        objectProgram.setVec3("lightPos", lightPos);
-        objectProgram.setVec3("viewPos", camera.Position);
+        lightProgram.use();
+        float lightRadius = 2.0f;
+        lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, 2.0f, cos(glfwGetTime()) * lightRadius);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
-        objectProgram.setMat4("projection", projection);
-        objectProgram.setMat4("view", view);
-        objectProgram.setMat4("model", model);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        lightProgram.use();
-        model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f));
         lightProgram.setMat4("projection", projection);
@@ -158,6 +148,19 @@ int main()
         lightProgram.setMat4("model", model);
         glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        objectProgram.use();
+        objectProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        objectProgram.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        objectProgram.setVec3("lightPos", lightPos);
+        objectProgram.setVec3("viewPos", camera.Position);
+        model = glm::mat4(1.0f);
+        objectProgram.setMat4("projection", projection);
+        objectProgram.setMat4("view", view);
+        objectProgram.setMat4("model", model);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
