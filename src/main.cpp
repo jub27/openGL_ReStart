@@ -134,24 +134,24 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         objectProgram.use();
-        glUniform3f(glGetUniformLocation(objectProgram.ID, "objectColor"), 1.0f, 0.5f, 0.31f);
-        glUniform3f(glGetUniformLocation(objectProgram.ID, "lightColor"), 1.0f, 1.0f, 1.0f);
+        objectProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        objectProgram.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
-        glUniformMatrix4fv(glGetUniformLocation(objectProgram.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(glGetUniformLocation(objectProgram.ID, "view"),1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(objectProgram.ID, "model"),1, GL_FALSE, glm::value_ptr(model));
+        objectProgram.setMat4("projection", projection);
+        objectProgram.setMat4("view", view);
+        objectProgram.setMat4("model", model);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         lightProgram.use();
-        glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "projection"),1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "view"),1, GL_FALSE, glm::value_ptr(view));
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f));
-        glUniformMatrix4fv(glGetUniformLocation(lightProgram.ID, "model"),1, GL_FALSE, glm::value_ptr(model));
+        lightProgram.setMat4("projection", projection);
+        lightProgram.setMat4("view", view);
+        lightProgram.setMat4("model", model);
         glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
