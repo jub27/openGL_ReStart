@@ -135,6 +135,13 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        glm::vec3 lightColor;
+        lightColor.x = sin(glfwGetTime() * 2.0f);
+        lightColor.y = sin(glfwGetTime() * 0.7f);
+        lightColor.z = sin(glfwGetTime() * 1.3f);
+        glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // 영향을 감소시킵니다.
+        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 낮은 영향
+
         lightProgram.use();
         float lightRadius = 2.0f;
         lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, sin(glfwGetTime()) * lightRadius, cos(glfwGetTime()) * lightRadius);
@@ -143,6 +150,7 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f));
+        lightProgram.setVec3("lightColor", lightColor);
         lightProgram.setMat4("projection", projection);
         lightProgram.setMat4("view", view);
         lightProgram.setMat4("model", model);
@@ -154,9 +162,9 @@ int main()
         objectProgram.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
         objectProgram.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         objectProgram.setFloat("material.shininess", 256.0f);
-        objectProgram.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
-        objectProgram.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); // Scene에 맞는 어두운 빛
-        objectProgram.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        objectProgram.setVec3("light.ambient",  ambientColor);
+        objectProgram.setVec3("light.diffuse",  diffuseColor); // Scene에 맞는 어두운 빛
+        objectProgram.setVec3("light.specular", lightColor);
         objectProgram.setVec3("light.position", lightPos);
         objectProgram.setVec3("viewPos", camera.Position);
         model = glm::mat4(1.0f);
