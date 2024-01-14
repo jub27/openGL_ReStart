@@ -162,7 +162,7 @@ int main()
         glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 낮은 영향
 
         lightProgram.use();
-        float lightRadius = 1.5f;
+        float lightRadius = 2.5f;
         lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, sin(glfwGetTime()) * lightRadius, cos(glfwGetTime()) * lightRadius);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
@@ -174,7 +174,7 @@ int main()
         lightProgram.setMat4("view", view);
         lightProgram.setMat4("model", model);
         glBindVertexArray(lightVAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
@@ -190,7 +190,10 @@ int main()
         objectProgram.setVec3("light.ambient",  ambientColor);
         objectProgram.setVec3("light.diffuse",  diffuseColor); // Scene에 맞는 어두운 빛
         objectProgram.setVec3("light.specular", lightColor);
-        objectProgram.setVec3("light.direction", -0.2f, -1.0f, -0.3f); 
+        objectProgram.setVec3("light.position", lightPos); 
+        objectProgram.setFloat("light.constant", 1.0f); 
+        objectProgram.setFloat("light.linear", 0.09f); 
+        objectProgram.setFloat("light.quadratic", 0.032f); 
         objectProgram.setVec3("viewPos", camera.Position);
         objectProgram.setMat4("projection", projection);
         objectProgram.setMat4("view", view);
