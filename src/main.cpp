@@ -154,8 +154,10 @@ int main()
         objectProgram.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
         objectProgram.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         objectProgram.setFloat("material.shininess", 256.0f);
-        objectProgram.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        objectProgram.setVec3("lightPos", lightPos);
+        objectProgram.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+        objectProgram.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); // Scene에 맞는 어두운 빛
+        objectProgram.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        objectProgram.setVec3("light.position", lightPos);
         objectProgram.setVec3("viewPos", camera.Position);
         model = glm::mat4(1.0f);
         objectProgram.setMat4("projection", projection);
