@@ -125,7 +125,8 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
-    unsigned int texture = loadTexture("./image/container2.png");
+    unsigned int diffuseMap = loadTexture("./image/container2.png");
+    unsigned int specularMap = loadTexture("./image/container2_specular.png");
 
     // render loop
     // -----------0
@@ -141,14 +142,14 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glm::vec3 lightColor;
-        lightColor.x = sin(glfwGetTime() * 2.0f);
-        lightColor.y = sin(glfwGetTime() * 0.7f);
-        lightColor.z = sin(glfwGetTime() * 1.3f);
+        lightColor.x = 1.0f;
+        lightColor.y = 1.0f;
+        lightColor.z = 1.0f;
         glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // 영향을 감소시킵니다.
         glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 낮은 영향
 
         lightProgram.use();
-        float lightRadius = 2.0f;
+        float lightRadius = 1.5f;
         lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, sin(glfwGetTime()) * lightRadius, cos(glfwGetTime()) * lightRadius);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
@@ -162,10 +163,16 @@ int main()
         glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        // bind specular map
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularMap);
+
         objectProgram.use();
         objectProgram.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
         objectProgram.setInt("material.diffuse",  0);
-        objectProgram.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        objectProgram.setInt("material.specular", 1);
         objectProgram.setFloat("material.shininess", 256.0f);
         objectProgram.setVec3("light.ambient",  ambientColor);
         objectProgram.setVec3("light.diffuse",  diffuseColor); // Scene에 맞는 어두운 빛
