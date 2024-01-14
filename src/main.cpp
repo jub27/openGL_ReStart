@@ -137,7 +137,7 @@ int main()
         
         lightProgram.use();
         float lightRadius = 2.0f;
-        lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, 2.0f, cos(glfwGetTime()) * lightRadius);
+        lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, sin(glfwGetTime()) * lightRadius, cos(glfwGetTime()) * lightRadius);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
@@ -150,7 +150,10 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         objectProgram.use();
-        objectProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        objectProgram.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+        objectProgram.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+        objectProgram.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        objectProgram.setFloat("material.shininess", 256.0f);
         objectProgram.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         objectProgram.setVec3("lightPos", lightPos);
         objectProgram.setVec3("viewPos", camera.Position);
