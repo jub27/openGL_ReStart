@@ -158,12 +158,13 @@ int main()
         lightColor.x = 1.0f;
         lightColor.y = 1.0f;
         lightColor.z = 1.0f;
-        glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // 영향을 감소시킵니다.
-        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 낮은 영향
+        glm::vec3 diffuseColor = lightColor   * glm::vec3(0.8f); // 영향을 감소시킵니다.
+        glm::vec3 ambientColor = lightColor * glm::vec3(0.2f); // 낮은 영향
 
         lightProgram.use();
         float lightRadius = 2.5f;
-        lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, sin(glfwGetTime()) * lightRadius, cos(glfwGetTime()) * lightRadius);
+        // lightPos = glm::vec3(sin(glfwGetTime()) * lightRadius, sin(glfwGetTime()) * lightRadius, cos(glfwGetTime()) * lightRadius);
+        lightPos = camera.Position;
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
@@ -174,7 +175,7 @@ int main()
         lightProgram.setMat4("view", view);
         lightProgram.setMat4("model", model);
         glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
@@ -191,12 +192,15 @@ int main()
         objectProgram.setVec3("light.diffuse",  diffuseColor); // Scene에 맞는 어두운 빛
         objectProgram.setVec3("light.specular", lightColor);
         objectProgram.setVec3("light.position", lightPos); 
+        objectProgram.setVec3("light.direction", camera.Front);
+        objectProgram.setFloat("light.cutOff", glm::cos(glm::radians(16.5f))); 
         objectProgram.setFloat("light.constant", 1.0f); 
         objectProgram.setFloat("light.linear", 0.09f); 
         objectProgram.setFloat("light.quadratic", 0.032f); 
         objectProgram.setVec3("viewPos", camera.Position);
         objectProgram.setMat4("projection", projection);
         objectProgram.setMat4("view", view);
+
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
         {
@@ -206,9 +210,9 @@ int main()
             float angle = 20.0f * i * glfwGetTime();
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             objectProgram.setMat4("model", model);
-
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
