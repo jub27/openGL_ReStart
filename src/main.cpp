@@ -143,6 +143,21 @@ int main()
         -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f								
     };
+    float grassVertices[] = {
+         0.5f, 0.5f,  0.0f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f,  0.0f, 1.0f,
+        -0.5f, 0.5f, 0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f						
+    };
+
+    vector<glm::vec3> vegetation;
+    vegetation.push_back(glm::vec3(-1.5f,  0.0f, -0.48f));
+    vegetation.push_back(glm::vec3( 1.5f,  0.0f,  0.51f));
+    vegetation.push_back(glm::vec3( 0.0f,  0.0f,  0.7f));
+    vegetation.push_back(glm::vec3(-0.3f,  0.0f, -2.3f));
+    vegetation.push_back(glm::vec3( 0.5f,  0.0f, -0.6f));
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -167,12 +182,26 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
+    // grass VAO
+    unsigned int grassVAO, grassVBO;
+    glGenVertexArrays(1, &grassVAO);
+    glGenBuffers(1, &grassVBO);
+    glBindVertexArray(grassVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, grassVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(grassVertices), &grassVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
 
+    stbi_set_flip_vertically_on_load(true);
     // load textures
     // -------------
-    unsigned int cubeTexture  = loadTexture("./image/container.jpg");
-    unsigned int floorTexture = loadTexture("./image/container2.png");
-
+    unsigned int cubeTexture  = loadTexture("./image/marble.jpg");
+    unsigned int grassTexture  = loadTexture("./image/grass.png");
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);    
     // shader configuration
     // --------------------
     shader.use();
@@ -199,58 +228,33 @@ int main()
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_STENCIL_TEST);
 
+        glBindVertexArray(cubeVAO);
+        glBindTexture(GL_TEXTURE_2D, cubeTexture);
         shader.use();
-        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0x00);
 
-        // floor
         glBindVertexArray(planeVAO);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        shader.setMat4("model", glm::mat4(1.0f));
+        glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        shader.use();
+        model = glm::mat4(1.0f);
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
 
-        glStencilMask(0xFF);
-        // cubes
-        glBindVertexArray(cubeVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, cubeTexture); 	
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        shader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        shader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        
-
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-
-        glDisable(GL_DEPTH_TEST);
-        outLineShader.use();
-        outLineShader.setMat4("view", view);
-        outLineShader.setMat4("projection", projection);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        model = glm::scale(model, glm::vec3(1.15f, 1.15f, 1.15f));
-        outLineShader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.15f, 1.15f, 1.15f));
-        outLineShader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glStencilMask(0xFF);
-        glEnable(GL_DEPTH_TEST);
-
+        glBindVertexArray(grassVAO);
+        for(int i = 0; i < vegetation.size(); i++){
+            glBindTexture(GL_TEXTURE_2D, grassTexture);
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, vegetation[i]);
+            shader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
