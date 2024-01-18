@@ -81,6 +81,8 @@ int main()
     glDepthFunc(GL_LESS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
     glStencilMask(0x00);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // build and compile shaders
     // -------------------------
@@ -200,6 +202,7 @@ int main()
     // -------------
     unsigned int cubeTexture  = loadTexture("./image/marble.jpg");
     unsigned int grassTexture  = loadTexture("./image/grass.png");
+    unsigned int windowTexture  = loadTexture("./image/blending_transparent_window.png");
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);    
     // shader configuration
@@ -247,14 +250,17 @@ int main()
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        glBindVertexArray(grassVAO);
-        for(int i = 0; i < vegetation.size(); i++){
-            glBindTexture(GL_TEXTURE_2D, grassTexture);
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
-            shader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
+
+
+        glBindVertexArray(cubeVAO);
+        glBindTexture(GL_TEXTURE_2D, windowTexture);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
