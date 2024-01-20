@@ -83,6 +83,7 @@ int main()
     // build and compile shaders
     // -------------------------
     Shader shader("./shader/vertex.vs", "./shader/fragment.fs");
+    Shader screenShader("./shader/vertexScreen.vs", "./shader/fragmentScreen.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -186,8 +187,8 @@ int main()
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture(FileSystem::getPath("./image/container.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("./image/marble.jpg").c_str());
+    unsigned int cubeTexture = loadTexture("./image/container.jpg");
+    unsigned int floorTexture = loadTexture("./image/marble.jpg");
 
     // shader configuration
     // --------------------
@@ -223,13 +224,10 @@ int main()
 
     // draw as wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // per-frame time logic
-        // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
