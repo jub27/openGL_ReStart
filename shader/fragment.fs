@@ -1,10 +1,9 @@
-#version 330 core
+#version 420 core
 out vec4 FragColor;
+layout (depth_less) out float gl_FragDepth;
 
 void main()
 {             
-    if(gl_FrontFacing)
-        FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-    else
-        FragColor = vec4(1.0, 0, 0, 1.0);
+    FragColor = vec4(1.0);
+    gl_FragDepth = gl_FragCoord.z + 1;
 }
