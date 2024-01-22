@@ -81,7 +81,7 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("./shader/vertex.vs", "./shader/fragment.fs");
+    Shader shader("./shader/vertex.vs", "./shader/fragment.fs", "./shader/geometry.gs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -148,7 +148,6 @@ int main()
     // shader configuration
     // --------------------
     shader.use();
-    glEnable(GL_PROGRAM_POINT_SIZE);  
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -170,7 +169,7 @@ int main()
         shader.setMat4("model", model);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_POINTS, 0, 3);
         // render
         // ------
 
