@@ -118,8 +118,17 @@ int main()
             translations[index++] = translation;
         }
     }
-
-
+    
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);	
+    glVertexAttribDivisor(2, 1);
 
 
 
@@ -129,15 +138,7 @@ int main()
 
     // shader configuration
     // --------------------
-    shader.use();
-    for(unsigned int i = 0; i < 100; i++)
-    {
-        stringstream ss;
-        string index;
-        ss << i; 
-        index = ss.str(); 
-        shader.setVec2(("offsets[" + index + "]").c_str(), translations[i]);
-    }  
+    shader.use(); 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -159,7 +160,6 @@ int main()
         // shader.setMat4("model", model);
         // shader.setMat4("view", view);
         // shader.setMat4("projection", projection);
-        glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
         // render
         // ------
